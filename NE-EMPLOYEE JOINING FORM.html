@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navnath Enterprises – Employee Joining Form</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f4f4f4; color: #222; padding: 1.5rem 1rem; }
+  .form-wrap { max-width: 720px; margin: 0 auto; }
+  .form-header { background: #c0392b; color: #fff; padding: 1.2rem 1.5rem; border-radius: 10px 10px 0 0; text-align: center; }
+  .form-header h1 { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+  .form-header p { font-size: 12px; opacity: 0.88; margin-top: 5px; }
+  .form-body { background: #fff; border: 1px solid #ddd; border-top: none; border-radius: 0 0 10px 10px; padding: 1.75rem 1.5rem 2rem; }
+  .section-title { font-size: 12px; font-weight: 700; color: #c0392b; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #c0392b; padding-bottom: 5px; margin: 1.75rem 0 1rem; }
+  .section-title:first-child { margin-top: 0; }
+  .field-grid { display: grid; gap: 14px; margin-bottom: 14px; }
+  .field-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .field-label { font-size: 12px; color: #555; margin-bottom: 5px; font-weight: 600; }
+  .field-label span { color: #c0392b; }
+  input[type=text], input[type=date], input[type=tel], select, textarea {
+    width: 100%; font-size: 14px; padding: 9px 11px;
+    border: 1px solid #ccc; border-radius: 6px;
+    background: #fafafa; color: #222; font-family: Arial, sans-serif;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: #c0392b; box-shadow: 0 0 0 2px rgba(192,57,43,0.15); background: #fff;
+  }
+  textarea { resize: vertical; min-height: 65px; }
+  .table-section { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px; }
+  .table-section th { background: #f5f5f5; font-weight: 700; font-size: 12px; padding: 9px 10px; text-align: left; border: 1px solid #ddd; color: #444; }
+  .table-section td { padding: 5px 6px; border: 1px solid #ddd; }
+  .table-section td input { border: none; background: transparent; padding: 5px 6px; font-size: 13px; width: 100%; outline: none; color: #222; }
+  .table-section td input:focus { background: #fef9f9; border-radius: 4px; box-shadow: inset 0 0 0 1px #c0392b; }
+  .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .upload-card { border: 1.5px dashed #ccc; border-radius: 8px; padding: 14px 12px; text-align: center; background: #fafafa; transition: border-color 0.2s; }
+  .upload-card.has-file { border-color: #27ae60; background: #f0faf4; }
+  .upload-icon { font-size: 28px; margin-bottom: 6px; }
+  .upload-label { font-size: 12px; font-weight: 700; color: #444; margin-bottom: 10px; }
+  .upload-btn-label { display: inline-block; padding: 7px 16px; background: #c0392b; color: #fff; border-radius: 5px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+  .upload-btn-label:hover { background: #a93226; }
+  input[type=file] { display: none; }
+  .file-status { font-size: 11px; color: #666; margin-top: 7px; word-break: break-all; }
+  .file-preview { margin-top: 8px; }
+  .file-preview img { max-width: 100%; max-height: 90px; border-radius: 4px; border: 1px solid #ddd; object-fit: cover; }
+  .pdf-badge { display: inline-block; background: #e8f0fe; color: #1a56db; border-radius: 4px; font-size: 11px; padding: 3px 8px; font-weight: 700; }
+  .progress-wrap { display: none; background: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 14px 16px; margin-top: 1rem; }
+  .progress-title { font-size: 13px; font-weight: 700; color: #444; margin-bottom: 10px; }
+  .progress-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #555; margin-bottom: 8px; }
+  .progress-item:last-child { margin-bottom: 0; }
+  .pdot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; flex-shrink: 0; }
+  .pdot.working { background: #f39c12; animation: blink 0.7s infinite; }
+  .pdot.ok { background: #27ae60; }
+  .pdot.err { background: #c0392b; }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+  .doc-grid { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
+  .doc-check { display: flex; align-items: center; gap: 7px; font-size: 14px; color: #222; cursor: pointer; }
+  .doc-check input[type=checkbox] { accent-color: #c0392b; width: 16px; height: 16px; cursor: pointer; }
+  .declaration { font-size: 12.5px; color: #555; background: #fef9f9; border-radius: 6px; padding: 12px 14px; border-left: 3px solid #c0392b; margin-top: 1.75rem; line-height: 1.7; }
+  .submit-btn { margin-top: 1.5rem; width: 100%; padding: 13px; background: #c0392b; color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+  .submit-btn:hover { background: #a93226; }
+  .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
+  .success-msg { display: none; text-align: center; padding: 3rem 1rem; }
+  .success-msg .tick { font-size: 56px; color: #27ae60; }
+  .success-msg h2 { font-size: 20px; font-weight: 700; margin-top: 14px; }
+  .success-msg p { font-size: 14px; color: #666; margin-top: 6px; }
+  .toast { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 12px 22px; border-radius: 8px; font-size: 13px; z-index: 999; max-width: 90%; text-align: center; line-height: 1.5; }
+  .toast.err { background: #c0392b; }
+  @media (max-width: 540px) {
+    .field-grid.cols-2, .upload-grid { grid-template-columns: 1fr; }
+    .table-section th, .table-section td { font-size: 11px; padding: 5px 4px; }
+    .form-body { padding: 1.25rem 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="form-wrap">
+  <div class="form-header">
+    <h1>NAVNATH ENTERPRISES</h1>
+    <p>Gat No. 208, Ground Floor, Vidya Heights, Govind Nagar, Chakan, Khed, Pune – 410501</p>
+  </div>
+
+  <div class="form-body" id="formBody">
+    <div style="text-align:center;font-size:15px;font-weight:700;text-decoration:underline;margin-bottom:1.25rem;color:#222;letter-spacing:0.5px;">EMPLOYEE JOINING FORM</div>
+
+    <div class="section-title">Personal Details</div>
+    <div class="field-grid"><div><div class="field-label">Employee Name <span>*</span></div><input type="text" id="empName" placeholder="Full name as per Aadhar card"></div></div>
+    <div class="field-grid"><div><div class="field-label">Father's / Husband's Name <span>*</span></div><input type="text" id="fatherName" placeholder="Enter full name"></div></div>
+    <div class="field-grid"><div><div class="field-label">Present Address <span>*</span></div><textarea id="presentAddr" placeholder="House no., street, city, state, PIN code"></textarea></div></div>
+    <div class="field-grid"><div><div class="field-label">Permanent Address</div><textarea id="permAddr" placeholder="Leave blank if same as present address"></textarea></div></div>
+    <div class="field-grid cols-2">
+      <div><div class="field-label">Date of Birth <span>*</span></div><input type="date" id="dob"></div>
+      <div><div class="field-label">Gender <span>*</span></div><select id="gender"><option value="">— Select —</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+    </div>
+    <div class="field-grid cols-2" style="margin-top:14px">
+      <div><div class="field-label">Mobile Number <span>*</span></div><input type="tel" id="mobile" placeholder="10-digit" maxlength="10"></div>
+      <div><div class="field-label">Blood Group</div><select id="blood"><option value="">— Select —</option><option>A+</option><option>A−</option><option>B+</option><option>B−</option><option>AB+</option><option>AB−</option><option>O+</option><option>O−</option></select></div>
+    </div>
+    <div class="field-grid cols-2" style="margin-top:14px">
+      <div><div class="field-label">Aadhar Number <span>*</span></div><input type="text" id="aadhar" placeholder="12-digit Aadhar number" maxlength="12"></div>
+      <div><div class="field-label">PAN Number</div><input type="text" id="pan" placeholder="e.g. ABCDE1234F" maxlength="10" oninput="this.value=this.value.toUpperCase()"></div>
+    </div>
+    <div class="field-grid cols-2" style="margin-top:14px">
+      <div><div class="field-label">UAN Number</div><input type="text" id="uan" placeholder="Universal Account Number"></div>
+      <div><div class="field-label">ESIC Number</div><input type="text" id="esic" placeholder="ESIC number"></div>
+    </div>
+    <div class="field-grid cols-2" style="margin-top:14px">
+      <div><div class="field-label">Designation <span>*</span></div><input type="text" id="desig" placeholder="e.g. Helper, Operator, Supervisor"></div>
+      <div><div class="field-label">Work Location <span>*</span></div><input type="text" id="workLoc" placeholder="Site / plant name"></div>
+    </div>
+
+    <div class="section-title">Qualification Details</div>
+    <table class="table-section">
+      <thead><tr><th style="width:28%">Qualification</th><th style="width:38%">Board / University</th><th style="width:16%">Passing Year</th><th style="width:18%">% / Grade</th></tr></thead>
+      <tbody>
+        <tr><td><input type="text" id="q1n" placeholder="e.g. SSC"></td><td><input type="text" id="q1b" placeholder="Board name"></td><td><input type="text" id="q1y" placeholder="Year"></td><td><input type="text" id="q1p" placeholder="%"></td></tr>
+        <tr><td><input type="text" id="q2n" placeholder="e.g. HSC / ITI"></td><td><input type="text" id="q2b" placeholder="Board name"></td><td><input type="text" id="q2y" placeholder="Year"></td><td><input type="text" id="q2p" placeholder="%"></td></tr>
+        <tr><td><input type="text" id="q3n" placeholder="e.g. Diploma / B.E."></td><td><input type="text" id="q3b" placeholder="University name"></td><td><input type="text" id="q3y" placeholder="Year"></td><td><input type="text" id="q3p" placeholder="%"></td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-title">Experience Details</div>
+    <table class="table-section">
+      <thead><tr><th style="width:38%">Company Name</th><th style="width:30%">Designation</th><th style="width:16%">From</th><th style="width:16%">To</th></tr></thead>
+      <tbody>
+        <tr><td><input type="text" id="e1c" placeholder="Company name"></td><td><input type="text" id="e1d" placeholder="Role"></td><td><input type="text" id="e1f" placeholder="MM/YY"></td><td><input type="text" id="e1t" placeholder="MM/YY"></td></tr>
+        <tr><td><input type="text" id="e2c" placeholder="Company name"></td><td><input type="text" id="e2d" placeholder="Role"></td><td><input type="text" id="e2f" placeholder="MM/YY"></td><td><input type="text" id="e2t" placeholder="MM/YY"></td></tr>
+        <tr><td><input type="text" id="e3c" placeholder="Company name"></td><td><input type="text" id="e3d" placeholder="Role"></td><td><input type="text" id="e3f" placeholder="MM/YY"></td><td><input type="text" id="e3t" placeholder="MM/YY"></td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-title">Bank Details</div>
+    <div class="field-grid"><div><div class="field-label">Account Number <span>*</span></div><input type="text" id="accNo" placeholder="Bank account number"></div></div>
+    <div class="field-grid cols-2">
+      <div><div class="field-label">Bank Name <span>*</span></div><input type="text" id="bankName" placeholder="e.g. SBI, HDFC, UCO Bank"></div>
+      <div><div class="field-label">IFSC Code <span>*</span></div><input type="text" id="ifsc" placeholder="e.g. SBIN0001234" oninput="this.value=this.value.toUpperCase()"></div>
+    </div>
+
+    <div class="section-title">Upload Documents</div>
+    <p style="font-size:12px;color:#888;margin-bottom:14px;">📎 Accepted: JPG, PNG, PDF &nbsp;|&nbsp; Max 10 MB per file &nbsp;|&nbsp; All 4 documents are required <span style="color:#c0392b">*</span></p>
+
+    <div class="upload-grid">
+      <div class="upload-card" id="cardPhoto">
+        <div class="upload-icon">📷</div>
+        <div class="upload-label">Photo <span style="color:#c0392b">*</span></div>
+        <label class="upload-btn-label" for="filePhoto">Choose File</label>
+        <input type="file" id="filePhoto" accept="image/jpeg,image/png,image/jpg,application/pdf" onchange="onFileChange(this,'prevPhoto','statusPhoto','cardPhoto')">
+        <div class="file-status" id="statusPhoto">No file chosen</div>
+        <div class="file-preview" id="prevPhoto"></div>
+      </div>
+      <div class="upload-card" id="cardAadhar">
+        <div class="upload-icon">🪪</div>
+        <div class="upload-label">Aadhar Card <span style="color:#c0392b">*</span></div>
+        <label class="upload-btn-label" for="fileAadhar">Choose File</label>
+        <input type="file" id="fileAadhar" accept="image/jpeg,image/png,image/jpg,application/pdf" onchange="onFileChange(this,'prevAadhar','statusAadhar','cardAadhar')">
+        <div class="file-status" id="statusAadhar">No file chosen</div>
+        <div class="file-preview" id="prevAadhar"></div>
+      </div>
+      <div class="upload-card" id="cardPan">
+        <div class="upload-icon">🗂️</div>
+        <div class="upload-label">PAN Card <span style="color:#c0392b">*</span></div>
+        <label class="upload-btn-label" for="filePan">Choose File</label>
+        <input type="file" id="filePan" accept="image/jpeg,image/png,image/jpg,application/pdf" onchange="onFileChange(this,'prevPan','statusPan','cardPan')">
+        <div class="file-status" id="statusPan">No file chosen</div>
+        <div class="file-preview" id="prevPan"></div>
+      </div>
+      <div class="upload-card" id="cardPassbook">
+        <div class="upload-icon">🏦</div>
+        <div class="upload-label">Bank Passbook <span style="color:#c0392b">*</span></div>
+        <label class="upload-btn-label" for="filePassbook">Choose File</label>
+        <input type="file" id="filePassbook" accept="image/jpeg,image/png,image/jpg,application/pdf" onchange="onFileChange(this,'prevPassbook','statusPassbook','cardPassbook')">
+        <div class="file-status" id="statusPassbook">No file chosen</div>
+        <div class="file-preview" id="prevPassbook"></div>
+      </div>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-title">Submitting form...</div>
+      <div class="progress-item"><div class="pdot" id="d1"></div><span id="l1">Uploading Photo</span></div>
+      <div class="progress-item"><div class="pdot" id="d2"></div><span id="l2">Uploading Aadhar Card</span></div>
+      <div class="progress-item"><div class="pdot" id="d3"></div><span id="l3">Uploading PAN Card</span></div>
+      <div class="progress-item"><div class="pdot" id="d4"></div><span id="l4">Uploading Bank Passbook</span></div>
+      <div class="progress-item"><div class="pdot" id="d5"></div><span id="l5">Sending email to HR</span></div>
+    </div>
+
+    <div style="margin-top:1.25rem">
+      <div class="field-label" style="margin-bottom:8px">Other Documents Submitted</div>
+      <div class="doc-grid">
+        <label class="doc-check"><input type="checkbox" id="docUan"> UAN / PF</label>
+        <label class="doc-check"><input type="checkbox" id="docEsic"> ESIC</label>
+      </div>
+    </div>
+
+    <div class="declaration">
+      <strong>Declaration:</strong> I hereby declare that all information furnished by me is true and correct. I agree to abide by all company rules, regulations, safety requirements, disciplinary procedures and company policies of Navnath Enterprises and its client company.
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">Submit Joining Form</button>
+  </div>
+
+  <div class="success-msg" id="successMsg">
+    <div class="tick">✓</div>
+    <h2>Form Submitted Successfully!</h2>
+    <p>All details &amp; document links sent to <strong>hr@navnathenterprises.com</strong></p>
+    <button class="submit-btn" style="max-width:220px;margin:1.5rem auto 0;display:block" onclick="resetForm()">Submit Another Entry</button>
+  </div>
+</div>
+
+<script>
+emailjs.init('eHHqe0h26GxNRlRKo');
+
+const CLOUD_NAME = 'djgpkce1i';
+const UPLOAD_PRESET = 'navnath_docs';
+
+function v(id){ return (document.getElementById(id)||{}).value||''; }
+
+function showToast(msg, isErr){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast'+(isErr?' err':'');
+  t.style.display = 'block';
+  setTimeout(()=>t.style.display='none', 5000);
+}
+
+function setDot(n, state, label){
+  document.getElementById('d'+n).className = 'pdot '+state;
+  if(label) document.getElementById('l'+n).textContent = label;
+}
+
+function onFileChange(input, prevId, statusId, cardId){
+  const file = input.files[0];
+  const status = document.getElementById(statusId);
+  const prev = document.getElementById(prevId);
+  const card = document.getElementById(cardId);
+  prev.innerHTML = '';
+  if(!file){ status.textContent='No file chosen'; card.classList.remove('has-file'); return; }
+  status.textContent = file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
+  card.classList.add('has-file');
+  if(file.type.startsWith('image/')){
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    prev.appendChild(img);
+  } else {
+    prev.innerHTML = '<span class="pdf-badge">PDF ✓</span>';
+  }
+}
+
+async function uploadToCloudinary(file, dotNum, label){
+  setDot(dotNum, 'working', 'Uploading '+label+'...');
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', UPLOAD_PRESET);
+  fd.append('folder', 'navnath_employees');
+  try {
+    const res = await fetch('https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/auto/upload', { method:'POST', body:fd });
+    const data = await res.json();
+    if(data.secure_url){
+      setDot(dotNum, 'ok', label+' uploaded ✓');
+      return data.secure_url;
+    } else {
+      throw new Error(data.error && data.error.message ? data.error.message : 'Upload failed');
+    }
+  } catch(e){
+    setDot(dotNum, 'err', label+' upload failed ✗');
+    throw e;
+  }
+}
+
+function buildEmailBody(links){
+  const other=[];
+  if(document.getElementById('docUan').checked) other.push('UAN / PF');
+  if(document.getElementById('docEsic').checked) other.push('ESIC');
+
+  return `
+<div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;color:#222">
+  <div style="background:#c0392b;color:#fff;padding:16px 20px;border-radius:8px 8px 0 0;text-align:center">
+    <h2 style="margin:0;font-size:20px;letter-spacing:1px">NAVNATH ENTERPRISES</h2>
+    <p style="margin:4px 0 0;font-size:11px;opacity:0.88">Gat No. 208, Ground Floor, Vidya Heights, Govind Nagar, Chakan, Khed, Pune – 410501</p>
+  </div>
+  <div style="border:1px solid #ddd;border-top:none;border-radius:0 0 8px 8px;padding:20px">
+    <h3 style="text-align:center;text-decoration:underline;font-size:14px;margin:0 0 16px">EMPLOYEE JOINING FORM</h3>
+
+    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px">
+      <tr style="background:#f5f5f5"><td colspan="2" style="padding:7px 10px;font-weight:700;color:#c0392b;font-size:11px;text-transform:uppercase;border:1px solid #ddd">Personal Details</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555;width:40%">Employee Name</td><td style="padding:6px 10px;border:1px solid #ddd;font-weight:700">${v('empName')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Father / Husband Name</td><td style="padding:6px 10px;border:1px solid #ddd">${v('fatherName')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Date of Birth</td><td style="padding:6px 10px;border:1px solid #ddd">${v('dob')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Gender</td><td style="padding:6px 10px;border:1px solid #ddd">${v('gender')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Mobile Number</td><td style="padding:6px 10px;border:1px solid #ddd">${v('mobile')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Blood Group</td><td style="padding:6px 10px;border:1px solid #ddd">${v('blood')||'—'}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Aadhar Number</td><td style="padding:6px 10px;border:1px solid #ddd">${v('aadhar')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">PAN Number</td><td style="padding:6px 10px;border:1px solid #ddd">${v('pan')||'—'}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">UAN Number</td><td style="padding:6px 10px;border:1px solid #ddd">${v('uan')||'—'}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">ESIC Number</td><td style="padding:6px 10px;border:1px solid #ddd">${v('esic')||'—'}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Designation</td><td style="padding:6px 10px;border:1px solid #ddd;font-weight:700">${v('desig')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Work Location</td><td style="padding:6px 10px;border:1px solid #ddd;font-weight:700">${v('workLoc')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Present Address</td><td style="padding:6px 10px;border:1px solid #ddd">${v('presentAddr').replace(/\n/g,'<br>')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Permanent Address</td><td style="padding:6px 10px;border:1px solid #ddd">${v('permAddr')||'Same as present'}</td></tr>
+
+      <tr style="background:#f5f5f5"><td colspan="2" style="padding:7px 10px;font-weight:700;color:#c0392b;font-size:11px;text-transform:uppercase;border:1px solid #ddd">Qualification Details</td></tr>
+      <tr style="background:#fafafa"><td style="padding:6px 10px;border:1px solid #ddd;font-weight:700;font-size:11px">Qualification</td><td style="padding:6px 10px;border:1px solid #ddd;font-size:11px;font-weight:700">Board / University | Year | %</td></tr>
+      ${v('q1n')?`<tr><td style="padding:6px 10px;border:1px solid #ddd">${v('q1n')}</td><td style="padding:6px 10px;border:1px solid #ddd">${v('q1b')} | ${v('q1y')} | ${v('q1p')}</td></tr>`:''}
+      ${v('q2n')?`<tr><td style="padding:6px 10px;border:1px solid #ddd">${v('q2n')}</td><td style="padding:6px 10px;border:1px solid #ddd">${v('q2b')} | ${v('q2y')} | ${v('q2p')}</td></tr>`:''}
+      ${v('q3n')?`<tr><td style="padding:6px 10px;border:1px solid #ddd">${v('q3n')}</td><td style="padding:6px 10px;border:1px solid #ddd">${v('q3b')} | ${v('q3y')} | ${v('q3p')}</td></tr>`:''}
+
+      <tr style="background:#f5f5f5"><td colspan="2" style="padding:7px 10px;font-weight:700;color:#c0392b;font-size:11px;text-transform:uppercase;border:1px solid #ddd">Experience Details</td></tr>
+      <tr style="background:#fafafa"><td style="padding:6px 10px;border:1px solid #ddd;font-weight:700;font-size:11px">Company | Role</td><td style="padding:6px 10px;border:1px solid #ddd;font-weight:700;font-size:11px">Duration</td></tr>
+      ${v('e1c')?`<tr><td style="padding:6px 10px;border:1px solid #ddd">${v('e1c')} — ${v('e1d')}</td><td style="padding:6px 10px;border:1px solid #ddd">${v('e1f')} to ${v('e1t')}</td></tr>`:''}
+      ${v('e2c')?`<tr><td style="padding:6px 10px;border:1px solid #ddd">${v('e2c')} — ${v('e2d')}</td><td style="padding:6px 10px;border:1px solid #ddd">${v('e2f')} to ${v('e2t')}</td></tr>`:''}
+      ${v('e3c')?`<tr><td style="padding:6px 10px;border:1px solid #ddd">${v('e3c')} — ${v('e3d')}</td><td style="padding:6px 10px;border:1px solid #ddd">${v('e3f')} to ${v('e3t')}</td></tr>`:''}
+
+      <tr style="background:#f5f5f5"><td colspan="2" style="padding:7px 10px;font-weight:700;color:#c0392b;font-size:11px;text-transform:uppercase;border:1px solid #ddd">Bank Details</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Account Number</td><td style="padding:6px 10px;border:1px solid #ddd;font-weight:700">${v('accNo')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Bank Name</td><td style="padding:6px 10px;border:1px solid #ddd">${v('bankName')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">IFSC Code</td><td style="padding:6px 10px;border:1px solid #ddd">${v('ifsc')}</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">Other Docs</td><td style="padding:6px 10px;border:1px solid #ddd">${other.length?other.join(', '):'None'}</td></tr>
+
+      <tr style="background:#f5f5f5"><td colspan="2" style="padding:7px 10px;font-weight:700;color:#c0392b;font-size:11px;text-transform:uppercase;border:1px solid #ddd">Uploaded Documents (click to open)</td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">📷 Photo</td><td style="padding:6px 10px;border:1px solid #ddd"><a href="${links.photo}" style="color:#c0392b;font-weight:700" target="_blank">View Photo</a></td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">🪪 Aadhar Card</td><td style="padding:6px 10px;border:1px solid #ddd"><a href="${links.aadhar}" style="color:#c0392b;font-weight:700" target="_blank">View Aadhar</a></td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">🗂️ PAN Card</td><td style="padding:6px 10px;border:1px solid #ddd"><a href="${links.pan}" style="color:#c0392b;font-weight:700" target="_blank">View PAN</a></td></tr>
+      <tr><td style="padding:6px 10px;border:1px solid #ddd;color:#555">🏦 Bank Passbook</td><td style="padding:6px 10px;border:1px solid #ddd"><a href="${links.passbook}" style="color:#c0392b;font-weight:700" target="_blank">View Passbook</a></td></tr>
+    </table>
+
+    <p style="font-size:11px;color:#aaa;text-align:center;margin-top:16px;border-top:1px solid #eee;padding-top:12px">
+      Submitted on ${new Date().toLocaleString('en-IN')} &nbsp;|&nbsp; Navnath Enterprises Employee Joining Form
+    </p>
+  </div>
+</div>`.trim();
+}
+
+async function submitForm(){
+  const req=[
+    ['empName','Employee Name'],['fatherName',"Father's / Husband's Name"],
+    ['presentAddr','Present Address'],['dob','Date of Birth'],['gender','Gender'],
+    ['mobile','Mobile Number'],['aadhar','Aadhar Number'],['desig','Designation'],
+    ['workLoc','Work Location'],['accNo','Account Number'],['bankName','Bank Name'],['ifsc','IFSC Code']
+  ];
+  for(const [id,label] of req){
+    const el=document.getElementById(id);
+    if(!el.value.trim()){
+      el.focus(); el.style.borderColor='#c0392b';
+      setTimeout(()=>el.style.borderColor='',2500);
+      showToast(label+' is required.',true); return;
+    }
+  }
+  if(!/^\d{10}$/.test(v('mobile'))){ showToast('Enter a valid 10-digit mobile number.',true); return; }
+  if(!/^\d{12}$/.test(v('aadhar'))){ showToast('Enter a valid 12-digit Aadhar number.',true); return; }
+
+  const fileFields=[
+    ['filePhoto','Photo','cardPhoto'],
+    ['fileAadhar','Aadhar Card','cardAadhar'],
+    ['filePan','PAN Card','cardPan'],
+    ['filePassbook','Bank Passbook','cardPassbook']
+  ];
+  for(const [id,label,cid] of fileFields){
+    if(!document.getElementById(id).files[0]){
+      const card=document.getElementById(cid);
+      card.style.borderColor='#c0392b';
+      setTimeout(()=>card.style.borderColor='',2500);
+      card.scrollIntoView({behavior:'smooth',block:'center'});
+      showToast(label+' document is required.',true); return;
+    }
+  }
+
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent='Uploading...';
+  const pw=document.getElementById('progressWrap');
+  pw.style.display='block';
+  pw.scrollIntoView({behavior:'smooth',block:'center'});
+
+  let photoUrl, aadharUrl, panUrl, passbookUrl;
+  try {
+    photoUrl    = await uploadToCloudinary(document.getElementById('filePhoto').files[0],    1, 'Photo');
+    aadharUrl   = await uploadToCloudinary(document.getElementById('fileAadhar').files[0],   2, 'Aadhar Card');
+    panUrl      = await uploadToCloudinary(document.getElementById('filePan').files[0],      3, 'PAN Card');
+    passbookUrl = await uploadToCloudinary(document.getElementById('filePassbook').files[0], 4, 'Bank Passbook');
+  } catch(e){
+    showToast('Document upload failed: '+(e.message||'Please check internet and try again.'), true);
+    btn.disabled=false; btn.textContent='Submit Joining Form'; return;
+  }
+
+  setDot(5,'working','Sending email to HR...');
+  btn.textContent='Sending email...';
+
+  const links = { photo:photoUrl, aadhar:aadharUrl, pan:panUrl, passbook:passbookUrl };
+  const params = {
+    to_email: 'hr@navnathenterprises.com',
+    employee_name: v('empName'),
+    designation: v('desig'),
+    work_location: v('workLoc'),
+    submitted_on: new Date().toLocaleString('en-IN'),
+    message: buildEmailBody(links)
+  };
+
+  try {
+    await emailjs.send('service_hy0k1c3', 'template_lrtgiil', params);
+    setDot(5,'ok','Email sent to hr@navnathenterprises.com ✓');
+    setTimeout(()=>{
+      document.getElementById('formBody').style.display='none';
+      document.getElementById('successMsg').style.display='block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }, 800);
+  } catch(err){
+    setDot(5,'err','Email sending failed');
+    showToast('Documents uploaded but email failed: '+(err.text||err.message||JSON.stringify(err)),true);
+    btn.disabled=false; btn.textContent='Submit Joining Form';
+  }
+}
+
+function resetForm(){
+  document.getElementById('formBody').querySelectorAll('input:not([type=file]),select,textarea').forEach(el=>{
+    if(el.type==='checkbox') el.checked=false; else el.value='';
+  });
+  ['filePhoto','fileAadhar','filePan','filePassbook'].forEach(id=>document.getElementById(id).value='');
+  ['prevPhoto','prevAadhar','prevPan','prevPassbook'].forEach(id=>document.getElementById(id).innerHTML='');
+  ['statusPhoto','statusAadhar','statusPan','statusPassbook'].forEach(id=>document.getElementById(id).textContent='No file chosen');
+  ['cardPhoto','cardAadhar','cardPan','cardPassbook'].forEach(id=>document.getElementById(id).classList.remove('has-file'));
+  for(let i=1;i<=5;i++){ document.getElementById('d'+i).className='pdot'; }
+  document.getElementById('progressWrap').style.display='none';
+  document.getElementById('submitBtn').disabled=false;
+  document.getElementById('submitBtn').textContent='Submit Joining Form';
+  document.getElementById('formBody').style.display='block';
+  document.getElementById('successMsg').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
